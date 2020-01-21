@@ -126,11 +126,15 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _default = {
   search: function search(searchTerm, searchLimit, sortBy) {
-    fetch("http://www.reddit.com/search.json?q=\n    ".concat(searchTerm, "&sort=").concat(searchLimit, "&limit=").concat(searchLimit)).then(function (res) {
+    return fetch("http://www.reddit.com/search.json?q=\n    ".concat(searchTerm, "&sort=").concat(searchLimit, "&limit=").concat(searchLimit)).then(function (res) {
       return res.json();
     }).then(function (data) {
-      return console.log(data);
-    }); //.then(data => console.log(typeof data));
+      return data.data.children.map(function (data) {
+        return data.data;
+      });
+    }).catch(function (err) {
+      return console.log(err);
+    });
   }
 };
 exports.default = _default;
@@ -160,7 +164,18 @@ searchForm.addEventListener("submit", function (e) {
 
   searchInput.value = ""; // Search Reddit
 
-  _redditapi.default.search(searchTerm, searchLimit, sortBy);
+  _redditapi.default.search(searchTerm, searchLimit, sortBy).then(function (results) {
+    console.log(results);
+    var output = "<div class=\"card-columns\">"; // Loop through posts
+
+    results.forEach(function (post) {
+      // Check for image  // ternary operator                  //else  //const is read only
+      var image = post.preview ? post.preview.images[0].source.url : "https://cdn.vox-cdn.com/thumbor/SfU1irp-V79tbpVNmeW1N6PwWpI=/0x0:640x427/1200x800/filters:focal(0x0:640x427)/cdn.vox-cdn.com/uploads/chorus_image/image/45970810/reddit_logo_640.0.jpg";
+      output += "\n      <div class=\"card\">\n  <img src=\"".concat(image, "\" class=\"card-img-top\" alt=\"...\">\n  <div class=\"card-body\">\n    <h5 class=\"card-title\">").concat(post.title, "</h5>\n    <p class=\"card-text\">").concat(truncateText(post.selftext, 100), "</p>\n    <a href=\"").concat(post.url, "\" target='_blank' class=\"btn btn-primary\">Read More</a>\n    <hr>\n    <span class=\"badge badge-secondary\">Subreddit: ").concat(post.subreddit, "</span>\n    <span class=\"badge badge-dark\">Score: ").concat(post.score, "</span>\n    </div>\n</div>");
+    });
+    output += "</div>";
+    document.getElementById('results').innerHTML = output;
+  });
 
   e.preventDefault();
 }); // Show Message
@@ -175,17 +190,25 @@ function showMessage(message, className) {
 
   var searchContainer = document.getElementById("search-container"); // Get search
 
-  var search = document.getElementById("search");
-  var myHtml = "<h1>Hey you</h1>"; //Insert message
+  var search = document.getElementById("search"); //Insert message
 
-  searchContainer.insertBefore(div, search);
-  searchContainer.innerHTML += myHtml; // Timeout alert {}
+  searchContainer.insertBefore(div, search); // Timeout alert {}
 
   setTimeout(function () {
     return document.querySelector(".alert").remove();
   }, 3000);
+} // Truncate Text
+
+
+function truncateText(text, limit) {
+  var shortened = text.indexOf(' ', limit);
+  console.log(text.length);
+  console.log(shortened);
+  if (shortened == -1) return text; //-1 meaning its not in this index
+
+  return text.substring(0, shortened);
 }
-},{"./redditapi":"redditapi.js"}],"../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./redditapi":"redditapi.js"}],"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -213,7 +236,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51967" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55193" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -389,5 +412,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.js"], null)
+},{}]},{},["../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.js"], null)
 //# sourceMappingURL=/Finddit.e31bb0bc.js.map
